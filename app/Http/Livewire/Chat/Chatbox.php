@@ -2,15 +2,24 @@
 
 namespace App\Http\Livewire\Chat;
 
+use Auth;
 use Livewire\Component;
 use App\Models\Message;
 use App\Models\Conversation;
+use App\Events\SendMessageEvent;
 
 class Chatbox extends Component
 {
     public $selectedConversation, $messages, $paginate = 15;
 
-    protected $listeners = ['loadConversation', 'addedMessage', 'loadMoreMessage'];
+    public function getListeners()
+    {
+        $userId = Auth::id();
+        return [
+            "echo-private:chat.{$userId},SendMessageEvent" => 'broadcastMessageForReceiver',
+            'loadConversation', 'addedMessage', 'loadMoreMessage'
+        ];
+    }
 
     public function loadConversation(Conversation $conversation)
     {
@@ -40,6 +49,16 @@ class Chatbox extends Component
             ->skip($this->selectedConversation->messages_count - $this->paginate)
             ->take($this->paginate)
             ->get();
+    }
+
+    public function broadcastMessageForReceiver($event)
+    {
+        $this->emitTo('chat.chat-list', 'refresh');
+
+        if ($this->selectedConversation?->id === $event['conversation_id']){
+            $this->addedMessage(Message::find($event['message_id']));
+        }
+
     }
 
     public function render()

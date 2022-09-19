@@ -55,13 +55,13 @@
             window.addEventListener('addRowMessage', evt => {
                 chatBody.scrollTop = chatBody.scrollHeight
             })
-            chatBody.addEventListener('scroll', evt => {
-                let old = JSON.parse(JSON.stringify(chatBody.scrollTop))
-                if(chatBody.scrollTop < 100){
-                    chatBody.scrollTop -= old
-                    window.livewire.emit('loadMoreMessage')
-                }
-            })
+            // chatBody.addEventListener('scroll', evt => {
+            //     let old = JSON.parse(JSON.stringify(chatBody.scrollTop))
+            //     if(chatBody.scrollTop < 100){
+            //         chatBody.scrollTop -= old
+            //         window.livewire.emit('loadMoreMessage')
+            //     }
+            // })
         </script>
     @else
         <div class="flex items-center justify-center h-full">
